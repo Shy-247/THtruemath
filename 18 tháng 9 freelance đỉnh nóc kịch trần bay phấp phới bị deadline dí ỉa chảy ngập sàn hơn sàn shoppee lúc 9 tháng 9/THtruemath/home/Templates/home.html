@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TH True Math</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Raleway:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"  rel="stylesheet">
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- Tesseract.js Library -->
+    <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js"></script>
+    <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <style>
+        .content {
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+        }
+        h2 {
+            color: #8B0000;
+        }
+        ul {
+            margin-left: 20px;
+            list-style-type: disc;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Raleway', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #eef2f3; /* Background color */
+            color: #333;
+        }
+        header {
+            background-color:#8B0000	; /* Header and footer background color */
+            color: #fff;
+            text-align: center;
+            padding: 0.5rem 0 1rem 0; /* Padding: trên 1rem, phải 0, dưới 1.5rem, trái 0 */
+            z-index: 1000; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            position: sticky;
+            top: 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        header nav {
+            margin-top: 10px;
+        }
+        header nav a {
+            color: #fff;
+            background-color: background-color;
+            text-decoration: none;
+            margin: 0 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+        }
+        header nav a:hover {
+            text-decoration: underline;
+        }
+        .cf-title-09 h3 {
+            text-align: center;
+            font-size: 5rem;
+            text-transform: uppercase;
+            color: #222;
+            letter-spacing: 1px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+        }
+        .cf-title-09 h3 span {
+            margin-top: 5px;
+            font-size: 1rem;
+            color: #444;
+            word-spacing: 1px;
+            font-weight: normal;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: "Raleway", sans-serif;
+            font-weight: 500;
+            display: grid;
+            grid-template-columns: 1fr max-content 1fr;
+            grid-gap: 20px;
+            align-items: center;
+        }
+        .cf-title-09 h3 span:after, .cf-title-09 h3 span:before {
+            content: " ";
+            display: block;
+            border-bottom: 1px solid #ccc;
+            border-top: 1px solid #ccc;
+            height: 5px;
+            background-color: #f8f8f8;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+        button, .search-input {
+            border-radius: 20px;
+            font-size: 15px;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button {
+            height: 40px;
+            background-color: #444; /* Button background color */
+            color: #fff;
+            border: none;
+        }
+        button:hover {
+            background-color: #666; /* Button hover color */
+        }
+        .search-input {
+            width: 60%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .camera-wrapper {
+            border: 2px solid #444; /* Border for camera display area */
+            border-radius: 12px;
+            padding: 10px;
+            background-color: #fff;
+            margin: 1rem auto;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .camera-wrapper button, .camera-wrapper input {
+            margin: 0;
+        }
+        section {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+        }
+        .wrapper {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+        }
+        .article {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 3rem 5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            flex: 3;
+            text-align: justify; /* Căn lề trái phải */
+            font-size: 1.3rem; /* Tăng cỡ chữ */
+        }
+        .article img {
+            max-width: 100%;
+            width: 450px; /* Kích thước của biểu tượng */
+            height: 250px; /* Kích thước của biểu tượng */
+            margin: 1rem auto; /* Margin to add space between paragraphs and images */
+            border-radius: 4px; /* Optional: Rounded corners for images */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for images */
+            display: block; /* Chuyển hình ảnh thành khối để margin auto hoạt động */
+            
+        }
+        .article p {
+            margin-bottom: 1.5rem; 
+        }
+        .article h1 {
+            text-align: center;
+            font-size:2.25rem;
+        }
+        .image-preview {
+            display: none;
+            flex: 3;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+        .sidebar {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-title .arrow {
+            transition: transform 0.3s;
+        }
+        .section-title.open .arrow {
+            transform: rotate(180deg);
+        }
+        .ocr-result {
+            display: block;
+            margin-top: 2rem;
+        }
+        .ocr-result textarea {
+            width: 100%;
+            height: 200px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+ 
+        }
+        /* Footer */
+        footer {
+            background-color:#DCDCDC	; /* Màu nền của footer */
+            color: #333; /* Màu chữ */
+            padding: 20px 0; /* Khoảng cách bên trong footer */
+            border-top: 1px solid #ddd; /* Viền trên của footer */
+            font-size: 14px; /* Kích thước chữ */
+        }
+
+        /* Nội dung footer */
+        .footer-content {
+            display: flex;
+            justify-content: space-between; /* Phân chia đều các phần tử */
+            align-items: center; /* Căn giữa các phần tử theo chiều ngang */
+            max-width: 1200px; /* Kích thước tối đa */
+            margin: 0 auto; /* Căn giữa footer */
+            padding: 0 20px; /* Padding bên trái và phải */
+        }
+
+        /* Phần tử bên trái */
+        .footer-left {
+            display: flex;
+            flex-direction: column; /* Đặt các phần tử theo chiều dọc */
+            gap: 20px; /* Khoảng cách giữa các phần tử */
+            padding: 20px;
+        }
+
+        /* Phần tử ở giữa */
+        .footer-center {
+            text-align: top; /* Căn lề trên */
+            padding-top: 20px; /* Khoảng cách phía trên */
+        }
+
+        .footer-center p {
+            margin: 0 0 10px 0; /* Khoảng cách giữa các phần tử */
+        }
+
+        .footer-center span {
+            font-size: 24px; /* Kích thước ký hiệu toán học */
+            margin: 0 5px; /* Khoảng cách giữa các ký hiệu */
+        }
+
+        .footer-center a {
+            display: inline-block; /* Đảm bảo các liên kết nằm ngang */
+            padding-left: 1.25rem;
+            margin: 0 10px; /* Khoảng cách giữa các biểu tượng */
+            transition: transform 0.3s, opacity 0.3s; /* Hiệu ứng chuyển tiếp cho hover */
+        }
+
+        .footer-center a img {
+            width: 24px; /* Kích thước của biểu tượng */
+            height: 24px; /* Kích thước của biểu tượng */
+            vertical-align: middle; /* Căn giữa hình ảnh với văn bản */
+        }
+
+        .footer-center a:hover {
+            transform: scale(1.1); /* Phóng to biểu tượng khi hover */
+            opacity: 0.8; /* Hiệu ứng mờ khi hover */
+        }
+
+        /* Phần tử bên phải */
+        .footer-right img {
+            max-width: 350px; /* Kích thước tối đa của hình ảnh */
+            width: 300px; /* Chiều rộng cụ thể */
+            height: 300px; /* Chiều cao cụ thể */
+            border-radius: 5px;
+        }
+
+        /* Thông tin footer dưới cùng */
+        .footer-bottom {
+            text-align: center; /* Căn giữa thông tin */
+            margin-top: 20px; /* Khoảng cách phía trên */
+        }
+
+        .footer-bottom p {
+            margin: 5px 0; /* Khoảng cách giữa các dòng */
+        }
+
+        .footer-bottom a {
+            color: #007bff; /* Màu liên kết */
+            text-decoration: none; /* Xóa gạch chân của liên kết */
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline; /* Gạch chân liên kết khi hover */
+        }
+        /* Tiêu đề */
+        .footer-title {
+            font-size: 42px; /* Kích thước chữ lớn hơn */
+            color: #8B0000; /* Màu đỏ */
+            font-weight: bold; /* Chữ đậm */
+            margin-bottom: 10px; /* Khoảng cách dưới */
+            font-family: 'Calibri', sans-serif; /* Thay đổi font chữ */
+        }
+        .footer-content a{
+            font-weight: 500;
+        }
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-upload-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .file-upload-button {
+            display: inline-block;
+            background-color: #B22222; /* Button background color */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+        }
+        .file-upload-button:hover {
+            background-color: #B22222; /* Button hover color */
+        }
+        .wrapper {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+            background-color: #eef2f3; /* Background color for wrapper */
+        }
+        
+        figure {
+            text-align: center; 
+            margin: 0;
+            
+        }
+        
+        figcaption {
+            margin-top: 0.5rem; 
+            font-size: 1rem; 
+            color: #333; 
+            padding: 1rem;
+            font-style: italic; /* Makes the text italic */
+            font-weight: 600; 
+        }
+        @media screen and (max-width: 768px) {
+            header nav {
+                margin-top: 5px; /* Giảm khoảng cách trên cho màn hình nhỏ */
+                padding: 0 0.5rem; /* Giảm padding bên trái và bên phải cho màn hình nhỏ */
+            }
+        
+            header nav a {
+                margin: 0 10px; /* Giảm khoảng cách giữa các liên kết cho màn hình nhỏ */
+                font-size: 1rem; /* Giảm kích thước chữ cho liên kết */
+            }
+            .wrapper {
+                flex-direction: column;
+            }
+            .article, .sidebar {
+                padding: 1rem;
+            }
+            .footer-content {
+                flex-direction: column; /* Đặt các phần tử theo chiều dọc */
+                padding: 10px; /* Giảm padding cho phù hợp với màn hình nhỏ */
+            }
+            
+            .footer-logo img {
+                width: 30px; /* Giảm kích thước logo cho màn hình nhỏ */
+            }
+            
+            .cf-title-09 h3 {
+                font-size: 2.2rem; /* Giảm kích thước tiêu đề cho màn hình nhỏ */
+            }
+            
+            .cf-title-09 h3 span {
+                font-size: 0.8rem; /* Giảm kích thước span cho màn hình nhỏ */
+            }
+            
+            .footer-links a {
+                font-size: 12px; /* Giảm kích thước chữ link cho màn hình nhỏ */
+            }
+            .camera-wrapper {
+                padding: 5px; /* Giảm padding để tiết kiệm không gian */
+                margin: 0.5rem auto; /* Giảm margin cho phù hợp với màn hình nhỏ */
+            }
+        
+            .camera-wrapper button, .camera-wrapper input {
+                padding: 8px 16px; /* Điều chỉnh padding cho các nút và input */
+                font-size: 14px; /* Giảm kích thước chữ cho các nút và input */
+            }
+        
+                    }
+                    /* Cải thiện giao diện thanh sidebar */
+            .sidebar {
+                background-color: #f9f9f9; /* Màu nền nhẹ nhàng */
+                border-radius: 8px; /* Bo góc nhẹ */
+                padding: 2rem; /* Padding cho không gian bên trong */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ để nổi bật */
+                flex: 1; /* Đảm bảo sidebar chiếm không gian hợp lý */
+            }
+
+            .sidebar h3 {
+                font-size: 1.7rem;
+                margin-bottom: 1rem;
+                color: #333; /* Màu chữ cho tiêu đề */
+                border-bottom: 2px solid #8B0000; /* Đường viền dưới tiêu đề */
+                padding-bottom: 0.5rem;
+            }
+
+            .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .sidebar ul li {
+                margin-bottom: 1rem; 
+                color:#B22222	;
+                text-decoration: none;
+                font-size: 1.1rem;
+                font-weight: 0;
+            }
+
+            .sidebar ul li a {
+                color: #8B0000; /* Màu liên kết chính */
+                text-decoration: none;
+                font-size: 1.1rem;
+                font-weight: 500; /* Đậm hơn để dễ đọc */
+                transition: color 0.3s, text-decoration 0.3s; /* Hiệu ứng chuyển đổi màu sắc và gạch chân */
+            }
+
+            .sidebar ul li a:hover {
+                color: #B22222; /* Màu liên kết khi hover */
+                text-decoration: underline; /* Gạch chân khi hover */
+            }
+        
+    </style>
+</head>
+<body>
+
+    <!-- Header(thanh menu) -->
+    <header>
+        <nav>
+            <a href="{% url 'home' %}">Trang chủ</a> |
+            <a href="{% url 'test_page' %}">Quét ảnh</a> |
+            <a href="{% url 'test_page2' %}">Tài liệu</a> |
+            <a href="#contact">Forum</a> |
+            <a href="{% url 'test_page3' %}">FAQ</a>
+        </nav>
+    </header>
+    
+    <!--Main-title-->
+    <div class="cf-title-09">
+        <h3>TH True Math<span>Bạn muốn nâng cao tư duy giải toán?</span></h3>
+    </div>
+
+    <!--Nội dung chính của trang web-->
+    <div class="wrapper">
+        <div class="article">
+            <h1>Fibonacci và hệ chữ số hiện đại ở châu Âu</h1>
+            <p>	Hình ảnh dưới đây là cuốn sách chữ Latin với tiêu đề Liber Abaci, được công bố vào năm 1202 bởi nhà toán học người Ý Fibonacci (1170-1250). Cuốn sách này không chỉ giới thiệu dãy Fibonacci nổi tiếng mà còn đóng vai trò quan trọng trong việc đưa hệ thống số Ấn Độ - Ả Rập (hay chính là hệ chữ số hiện đại) đến châu Âu. Liber Abaci đã khuyến khích các nhà buôn, học giả và toàn bộ xã hội châu Âu chuyển sang sử dụng hệ chữ số hiện đại, thúc đẩy sự phát triển của toán học, khoa học và thương mại, tạo ra một bước ngoặt quan trọng trong lịch sử tri thức châu Âu.</p>
+            
+            <figure>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCLZhEppzwfP23HiibAtj04ekCo5HAS-o4GQ&s" alt="Quyển sách Libre Abaci, viết bởi Fibonacci">
+                <figcaption>(Quyển sách Liber Abaci, viết bởi Fibonacci)</figcaption>
+            </figure>
+            <p>	Chắc hẳn nhiều người biết đến Fibonacci bởi dãy số mang tên ông và những ứng dụng của chúng. Thế nhưng, ít người biết rằng ông còn là người có công lớn trong việc phổ biến hệ chữ số hiện đại đến với toàn châu Âu để thay thế cho hệ chữ số La Mã vốn đã lỗi thời.</p>
+            <p>Số La Mã là một hệ thống chữ số cổ đại, được phát triển từ trước công nguyên và được sử dụng rộng rãi trên toàn châu Âu cho đến khoảng thế kỉ XIII, XIV thì được thay thế bởi hệ ghi số Ấn Độ - Ả Rập.</p>
+            <p>	Mặc dù được sử dụng rộng rãi trong thời gian dài, số La Mã lại có nhiều khuyết điểm vô cùng chí mạng. Vì hệ thống này được xây dựng dựa trên một số lượng có hạn kí hiệu (với mỗi kí hiệu mang một giá trị cố định), việc biểu diễn những số có giá trị lớn hay thực hiện phép nhân, chia trên chúng là vô cùng khó khăn bởi tính chất của hệ số này.</p>
+            <p>Lúc bấy giờ, Fibonacci - một nhà toán học lỗi lạc, vào khoảng năm 1170 đã theo cha đến Bắc Phi, nơi ông học hỏi, tìm tòi từ các nhà toán học Ả Rập và khám phá hệ thống số Ấn Độ - Ả Rập. Nhận thấy sự ưu việt của hệ thống này, ông viết tác phẩm Liber Abaci để giới thiệu chúng tới châu Âu, vượt qua những hạn chế của hệ số La Mã. Với tầm nhìn của mình, Fibonacci đã góp phần quan trọng trong việc chuyển đổi hệ thống số học châu Âu, đặt nền tảng cho những tiến bộ trong khoa học và kinh tế.</p>        
+            <p> Vì thế, giải pháp cho những vấn đề trong cuộc sống luôn hiện hữu quanh ta, chỉ cần tìm tòi và nghiên cứu, ta sẽ tìm ra được lời giải cho những điều tưởng như bất khả.</p>
+        </div>
+        
+        <!--Sidebar-->
+        <div class="sidebar">
+            <h3>Bản tin</h3>
+               
+            <ul>
+                <li><a href="#" target="_blank">Thông tin cập nhật phiên bản</a></li>
+            </ul>
+            <h3>Mới Nhất</h3>
+                
+                <ul>
+                    <li><a href="#latest1">Bài viết mới nhất 1</a></li>
+                    <li><a href="#latest2">Bài viết mới nhất 2</a></li>
+                    <li><a href="#latest3">Bài viết mới nhất 3</a></li>
+                </ul>
+            
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <p class="footer-title">Liên hệ</p>
+                    <a href="https://www.facebook.com/profile.php?id=61550744849106" target="_blank">TeaOnce A Day</a>
+                    <a href="https://www.facebook.com/profile.php?id=100046162241856" target="_blank">ChuaTeBongToi</a>
+                    <a href="https://www.facebook.com/lamkhanh.hung.351" target="_blank">ChuaTeDaiDuong</a>
+                
+                
+            </div>
+            <div class="footer-center">
+                <p class="footer-title">TH True Math</p>
+                <a href="{% url 'test_page4' %}">Giới thệu về chúng tôi</a>
+            
+            </div>
+            <div class="footer-right">
+                <img src="https://i.pinimg.com/564x/64/5c/ae/645cae7dc90e80d0ccd65b0bbad908f7.jpg" alt="TH True Math" />
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 TH True Math. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+
+
