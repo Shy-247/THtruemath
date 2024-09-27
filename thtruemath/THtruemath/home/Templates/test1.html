@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TH True Math</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Raleway:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"  rel="stylesheet">
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- Tesseract.js Library -->
+    <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js"></script>
+    <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Raleway', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #eef2f3; /* Background color */
+            color: #333;
+        }
+        header {
+            background-color:#8B0000	; /* Header and footer background color */
+            color: #fff;
+            text-align: center;
+            padding: 0.5rem 0 1rem 0; /* Padding: trên 1rem, phải 0, dưới 1.5rem, trái 0 */
+            z-index: 1000; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            position: sticky;
+            top: 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        header nav {
+            margin-top: 10px;
+        }
+        header nav a {
+            color: #fff;
+            background-color: background-color;
+            text-decoration: none;
+            margin: 0 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+        }
+        header nav a:hover {
+            text-decoration: underline;
+        }
+        .cf-title-09 h3 {
+            text-align: center;
+            font-size: 5rem;
+            text-transform: uppercase;
+            color: #222;
+            letter-spacing: 1px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+        }
+        .cf-title-09 h3 span {
+            margin-top: 5px;
+            font-size: 1rem;
+            color: #444;
+            word-spacing: 1px;
+            font-weight: normal;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: "Raleway", sans-serif;
+            font-weight: 500;
+            display: grid;
+            grid-template-columns: 1fr max-content 1fr;
+            grid-gap: 20px;
+            align-items: center;
+        }
+        .cf-title-09 h3 span:after, .cf-title-09 h3 span:before {
+            content: " ";
+            display: block;
+            border-bottom: 1px solid #ccc;
+            border-top: 1px solid #ccc;
+            height: 5px;
+            background-color: #f8f8f8;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+        button, .search-input {
+            border-radius: 20px;
+            font-size: 15px;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button {
+            height: 40px;
+            background-color: #444; /* Button background color */
+            color: #fff;
+            border: none;
+        }
+        button:hover {
+            background-color: #666; /* Button hover color */
+        }
+        .search-input {
+            width: 60%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        /* Camera wrapper */
+        .camera-wrapper {
+            border: 2px solid #444; /* Border cho khu vực hiển thị camera */
+            border-radius: 12px;
+            padding: 10px;
+            background-color: #fff;
+            margin: 1rem auto; /* Giảm margin cho phù hợp với màn hình nhỏ */
+            width: 100%; /* Đặt chiều rộng là 100% để phù hợp với màn hình */
+            max-width: 800px; /* Đặt chiều rộng tối đa để tránh quá lớn trên màn hình rộng */
+            display: flex;
+            flex-direction: column; /* Xếp các phần tử theo chiều dọc */
+            align-items: center; /* Căn giữa các phần tử */
+            gap: 10px; /* Khoảng cách giữa các phần tử */
+        }
+        .camera-wrapper video {
+            border-radius: 8px;
+            width: 100%; /* Đặt chiều rộng là 100% để phù hợp với kích thước của .camera-wrapper */
+            max-width: 550px; /* Đặt chiều rộng tối đa để tránh quá lớn trên màn hình rộng */
+            height: auto; /* Điều chỉnh chiều cao tự động để duy trì tỷ lệ */
+            object-fit: cover; /* Đảm bảo video không bị biến dạng và lấp đầy khu vực */
+            background-image: url('https://i.pinimg.com/736x/88/74/61/887461fd7aec0a13c6bb51db93b2875e.jpg'); /* Đường dẫn tới hình ảnh */
+            background-size: cover; /* Căn chỉnh hình nền để lấp đầy khu vực */
+            background-position: center; /* Căn giữa hình nền */
+            background-repeat: no-repeat; /* Không lặp lại hình nền */
+        }
+        
+        .button-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .camera-wrapper button, .camera-wrapper input {
+            margin: 0;
+        }
+        section {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+        }
+        .wrapper {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+            margin-top: 0;
+        }
+        .article {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            flex: 3;
+            font-size: 1rem;
+        }
+        .image-preview {
+            display: none;
+            flex: 3;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+        .sidebar {
+            background-color: #f9f9f9; /* Màu nền nhẹ nhàng */
+            border-radius: 8px; /* Bo góc nhẹ */
+            padding: 2rem; /* Padding cho không gian bên trong */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ để nổi bật */
+            flex: 1; /* Đảm bảo sidebar chiếm không gian hợp lý */
+            margin-top: 0;
+        }
+
+        .sidebar h3 {
+            font-size: 1.7rem;
+            margin-bottom: 1rem;
+            color: #333; /* Màu chữ cho tiêu đề */
+            border-bottom: 2px solid #8B0000; /* Đường viền dưới tiêu đề */
+            padding-bottom: 0.5rem;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 1rem; /* Khoảng cách giữa các liên kết */
+        }
+
+        .sidebar ul li a {
+            color: #8B0000; /* Màu liên kết chính */
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500; /* Đậm hơn để dễ đọc */
+            transition: color 0.3s, text-decoration 0.3s; /* Hiệu ứng chuyển đổi màu sắc và gạch chân */
+        }
+
+        .sidebar ul li a:hover {
+            color: #B22222; /* Màu liên kết khi hover */
+            text-decoration: underline; /* Gạch chân khi hover */
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-title .arrow {
+            transition: transform 0.3s;
+        }
+        .section-title.open .arrow {
+            transform: rotate(180deg);
+        }
+        .ocr-result {
+            display: block;
+            margin-top: 0;
+            text-align: center;
+            padding-bottom: 3rem;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            
+        }
+        .ocr-result textarea {
+            width: 100%;
+            height: 200px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            margin-top: 0;
+        }
+        @media screen and (max-width: 768px) {
+            header nav {
+                margin-top: 5px; /* Giảm khoảng cách trên cho màn hình nhỏ */
+                padding: 0 0.5rem; /* Giảm padding bên trái và bên phải cho màn hình nhỏ */
+            }
+        
+            header nav a {
+                margin: 0 10px; /* Giảm khoảng cách giữa các liên kết cho màn hình nhỏ */
+                font-size: 1rem; /* Giảm kích thước chữ cho liên kết */
+            }
+            .camera-wrapper video {
+                max-width: 100%; /* Đặt chiều rộng tối đa là 100% cho màn hình nhỏ */
+                height: auto; /* Đảm bảo chiều cao tự động để duy trì tỷ lệ */
+            }
+            .wrapper {
+                flex-direction: column;
+            }
+            .article, .sidebar {
+                padding: 1rem;
+            }
+            .footer-content {
+                flex-direction: column; /* Đặt các phần tử theo chiều dọc */
+                padding: 10px; /* Giảm padding cho phù hợp với màn hình nhỏ */
+            }
+            
+            .footer-logo img {
+                width: 30px; /* Giảm kích thước logo cho màn hình nhỏ */
+            }
+            
+            .cf-title-09 h3 {
+                font-size: 2.2rem; /* Giảm kích thước tiêu đề cho màn hình nhỏ */
+            }
+            
+            .cf-title-09 h3 span {
+                font-size: 0.6rem; /* Giảm kích thước span cho màn hình nhỏ */
+            }
+            
+            .footer-links a {
+                font-size: 12px; /* Giảm kích thước chữ link cho màn hình nhỏ */
+            }
+            .camera-wrapper {
+                padding: 5px; /* Giảm padding để tiết kiệm không gian */
+                margin: 0.5rem auto; /* Giảm margin cho phù hợp với màn hình nhỏ */
+            }
+        
+            .camera-wrapper button, .camera-wrapper input {
+                padding: 8px 16px; /* Điều chỉnh padding cho các nút và input */
+                font-size: 14px; /* Giảm kích thước chữ cho các nút và input */
+            }
+        
+                    }
+        
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-upload-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .file-upload-button {
+            display: inline-block;
+            background-color: #B22222; /* Button background color */
+            color: #fff;
+            border: none;
+            padding: 5px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            width: 140px;
+            height: 40px; 
+            text-align: center;
+            line-height: 30px; 
+            font-size: 16px;
+        }
+        .file-upload-button:hover {
+            background-color: #8B0000; 
+            
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            
+        }
+        .toggle-switch input {
+            display: none;
+            
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #8B0000, #CD5C5C, #FFA07A, #8B0000);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #FAEBD7;
+            transition: .4s;
+            border-radius: 50%;
+        }
+      
+        input:checked + .slider {
+            background: linear-gradient(45deg, #4B0082, #9370DB	,#98FB98, #4B0082);
+            transition: background-color 0.4s ease;
+        } 
+
+        
+        input:checked + .slider:before {
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            transform: translateX(26px); 
+        }
+        .switch-label {
+            margin-left: 10px;
+            vertical-align: middle;
+            font-size: 16px;
+        }
+        /* Footer */
+        footer {
+            background-color:#DCDCDC	; /* Màu nền của footer */
+            color: #333; /* Màu chữ */
+            padding: 20px 0; /* Khoảng cách bên trong footer */
+            border-top: 1px solid #ddd; /* Viền trên của footer */
+            font-size: 14px; /* Kích thước chữ */
+        }
+
+        /* Nội dung footer */
+        .footer-content {
+            display: flex;
+            justify-content: space-between; /* Phân chia đều các phần tử */
+            align-items: center; /* Căn giữa các phần tử theo chiều ngang */
+            max-width: 1200px; /* Kích thước tối đa */
+            margin: 0 auto; /* Căn giữa footer */
+            padding: 0 20px; /* Padding bên trái và phải */
+        }
+
+        /* Phần tử bên trái */
+        .footer-left {
+            display: flex;
+            flex-direction: column; /* Đặt các phần tử theo chiều dọc */
+            gap: 20px; /* Khoảng cách giữa các phần tử */
+            padding: 20px;
+        }
+
+        /* Phần tử ở giữa */
+        .footer-center {
+            text-align: top; /* Căn lề trên */
+            padding-top: 20px; /* Khoảng cách phía trên */
+        }
+
+        .footer-center p {
+            margin: 0 0 10px 0; /* Khoảng cách giữa các phần tử */
+        }
+
+        .footer-center span {
+            font-size: 24px; /* Kích thước ký hiệu toán học */
+            margin: 0 5px; /* Khoảng cách giữa các ký hiệu */
+        }
+
+        .footer-center a {
+            display: inline-block; /* Đảm bảo các liên kết nằm ngang */
+            padding-left: 1.25rem;
+            margin: 0 10px; /* Khoảng cách giữa các biểu tượng */
+            transition: transform 0.3s, opacity 0.3s; /* Hiệu ứng chuyển tiếp cho hover */
+        }
+
+        .footer-center a img {
+            width: 24px; /* Kích thước của biểu tượng */
+            height: 24px; /* Kích thước của biểu tượng */
+            vertical-align: middle; /* Căn giữa hình ảnh với văn bản */
+        }
+
+        .footer-center a:hover {
+            transform: scale(1.1); /* Phóng to biểu tượng khi hover */
+            opacity: 0.8; /* Hiệu ứng mờ khi hover */
+        }
+
+        /* Phần tử bên phải */
+        .footer-right img {
+            max-width: 350px; /* Kích thước tối đa của hình ảnh */
+            width: 300px; /* Chiều rộng cụ thể */
+            height: 300px; /* Chiều cao cụ thể */
+            border-radius: 5px; /* Bo góc */
+        }
+
+        /* Thông tin footer dưới cùng */
+        .footer-bottom {
+            text-align: center; /* Căn giữa thông tin */
+            margin-top: 20px; /* Khoảng cách phía trên */
+        }
+
+        .footer-bottom p {
+            margin: 5px 0; /* Khoảng cách giữa các dòng */
+        }
+
+        .footer-bottom a {
+            color: #007bff; /* Màu liên kết */
+            text-decoration: none; /* Xóa gạch chân của liên kết */
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline; /* Gạch chân liên kết khi hover */
+        }
+        /* Tiêu đề */
+        .footer-title {
+            font-size: 42px; /* Kích thước chữ lớn hơn */
+            color: #8B0000; /* Màu đỏ */
+            font-weight: bold; /* Chữ đậm */
+            margin-bottom: 10px; /* Khoảng cách dưới */
+            font-family: 'Calibri', sans-serif; /* Thay đổi font chữ */
+        }
+        .footer-content a{
+            font-weight: 500;
+        }
+        .notification-article {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            flex: 3;
+            font-weight: bold;
+            font-size: 1rem;
+            font-family: 'Calibri', sans-serif;
+        }
+        
+        .notification-article a {
+            color: #8B0000;
+            text-decoration: underline;
+        }
+        .image-feedback{
+            color: #B22222;
+            font-weight: 400;
+            font-size: 1.5rem;
+            font-family: 'Calibri', sans-serif;
+
+        }
+        #dung, #sai{
+            display: inline-block;
+            background-color: #B22222;
+            color: #fff;
+            border: none;
+            padding: 5px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            width: 140px;
+            height: 40px; 
+            text-align: center;
+            line-height: 30px; 
+            font-size: 16px;
+        }
+        #loading {
+            position: fixed; 
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8); 
+            border-radius: 8px; 
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 8px solid #f3f3f3; 
+            border-top: 8px solid #B22222; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px;
+            animation: spin 0.5s linear infinite; 
+        }
+        
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+
+    </style>
+</head>
+<body> 
+     <!-- Header(thanh menu) -->
+     <header>
+        
+        <nav>
+            <a href="{% url 'home' %}">Trang chủ</a> |
+            <a href="{% url 'test_page' %}">Quét ảnh</a> |
+            <a href="{% url 'test_page2' %}">Tài liệu</a> |
+            <a href="#contact">Forum</a> |
+            <a href="{% url 'test_page3' %}">FAQ</a>
+        </nav>
+    </header>
+
+
+    <!--Main-title-->
+    <div class="cf-title-09">
+        <h3>TH True Math<span>Bạn muốn nâng cao tư duy giải toán?</span></h3>
+    </div>
+
+
+    <!-- Camera Wrapper -->
+    <div class="camera-wrapper">
+        <video id="video" width="450" height="280"></video>
+        <div class="button-wrapper">
+            <label class="toggle-switch">
+                <input type="checkbox" id="choose-ab">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">Pdf/Cam (Hiện tại: <span id="current-choice">Pdf</span>)</span>
+            <button id="toggle-camera" class="file-upload-button">Bật camera</button>
+            <button id="snap" style="display: none;" class="file-upload-button">Chụp hình</button>
+            <div class="file-upload-wrapper">
+                <button class="file-upload-button">Tải ảnh lên</button>
+                <input type="file" accept="image/*" onchange="handleAndProcessImage(event)">
+            </div>
+        </div>
+    </div>
+
+
+    <!--Vẽ hình ảnh được người dùng nhập vào bằng canvas-->
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+
+
+    <!--Hiển thị hình ảnh vừa nhập vào-->
+    <div class="image-preview" style="display: none;">
+        <img id="preview-img" alt="Image Preview" />
+    </div>
+
+
+    <!--Nút cắt hình ảnh-->
+    <div class="search-bar">
+        <button id="crop-button" style="display: none;" class="file-upload-button">Crop</button>
+    </div>
+
+    <div id="loading" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+
+    <!--Hiển thị thông báo từ backend sau khi xử lí bằng hàm java-->
+    <div class="wrapper">
+
+
+    </div>
+
+
+    <!--Hiển thị file pdf-->
+    <div class="ocr-result">
+        <h3>Hướng giải sẽ được hiển thị ở đây:</h3>
+        <textarea class="ocr-text" rows="4" readonly style="display: none;"></textarea>
+        <div class="pdf-preview" style="display: none;">
+            <iframe class="pdf-frame" width="90%" height="1000px"></iframe>
+        </div>
+        <div class="image-feedback">
+            <!--Hiển thị thông báo nếu dạng toán chưa được hỗ trợ-->
+        </div>
+    </div>
+
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-left">
+            <p class="footer-title">Liên hệ</p>
+                <a href="https://www.facebook.com/profile.php?id=61550744849106" target="_blank">TeaOnce A Day</a>
+                <a href="https://www.facebook.com/profile.php?id=100046162241856" target="_blank">ChuaTeBongToi</a>
+                <a href="https://www.facebook.com/lamkhanh.hung.351" target="_blank">ChuaTeDaiDuong</a>
+            
+            
+        </div>
+        <div class="footer-center">
+            <p class="footer-title">TH True Math</p>
+            <a href="{% url 'test_page4' %}">Giới thệu về chúng tôi</a>
+        
+        </div>
+        <div class="footer-right">
+            <img src="https://i.pinimg.com/564x/64/5c/ae/645cae7dc90e80d0ccd65b0bbad908f7.jpg" alt="TH True Math" />
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 TH True Math. All rights reserved.</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </div>
+</footer>
+
+
+
+</body>
+</html>
+
+
+
+    <script>
+        let cropper; // Gọi hàm cắt hình ảnh
+        let isCameraOpen = false; // Biến quyết định việc mở/đóng camera
+        let originalFile; // Biến lưu trữ file hình ảnh gốc được nhập vào từ user
+        let Ngu = 'Pdf'; // Ngu = pdf/cam biểu thị sự lựa chọn của người dùng cho việc chọn nhập vào định dạng hình ảnh nào để phần xử lí hình ảnh hoặt động tốt nhất
+        let iachay = false; // Biến quyết định thông báo (vẽ hàm số) có được hiển thị không
+        let thieunang = true; // Biến dùng để xác định xem dạng toán đã được hỗ trợ hay chưa
+        
+        //Sự kiện của nút bật/tắt camera
+        document.getElementById('toggle-camera').addEventListener('click', () => {
+            const video = document.getElementById('video');
+            if (isCameraOpen) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+
+                // Dừng tất cả các track của stream
+                tracks.forEach(track => track.stop());
+
+                video.srcObject = null;
+                document.getElementById('snap').style.display = 'none';
+                isCameraOpen = false;
+                document.getElementById('toggle-camera').textContent = 'Bật camera';
+            } else {
+                // Yêu cầu quyền truy cập camera sau
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        video.play();
+                        document.getElementById('snap').style.display = 'block';
+                        isCameraOpen = true;
+                        document.getElementById('toggle-camera').textContent = 'Tắt camera';
+                    })
+                    .catch(err => {
+                        console.error("Error: " + err);
+                    });
+            }
+        });
+
+        
+        //Sự kiện cho nút chụp hình
+        document.getElementById('snap').addEventListener('click', () => {
+            if (isCameraOpen) {
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+                const video = document.getElementById('video');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(blob => {
+                    const file = new File([blob], "snapshot.png", { type: "image/png" });
+                    handleAndProcessImage({ target: { files: [file] } });
+                }, 'image/png');
+            } else {
+                alert('Vui lòng bật camera trước khi chụp hình!');
+            }
+        });
+        
+        
+        //Hàm cắt và xử lí ảnh
+        async function handleAndProcessImage(event) {
+            const file = event.target.files ? event.target.files[0] : null;
+            if (file) {
+                originalFile = file; // Lưu hình ảnh gốc vào biến toàn cục
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const imageElement = document.getElementById('preview-img');
+                    imageElement.src = reader.result;
+                    document.querySelector('.image-preview').style.display = 'flex';
+        
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(imageElement, {
+                        aspectRatio: NaN,
+                        viewMode: 1
+                    });
+                    
+                    //Hiển thị nút crop ảnh
+                    document.getElementById('crop-button').style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Vui lòng chọn một tập tin hình ảnh.');
+            }
+        }
+        
+        //Sự kiện cho nút crop ảnh
+        document.getElementById('crop-button').addEventListener('click', async () => {
+            if (cropper) {
+
+                  // Hiển thị biểu tượng loading
+                document.getElementById('loading').style.display = 'block';
+
+                //Gửi hình đã crop đến server
+                const croppedCanvas = cropper.getCroppedCanvas();
+                croppedCanvas.toBlob(async blob => {
+                    const croppedFile = new File([blob], "cropped.png", { type: "image/png" });
+        
+
+        
+                    const formData = new FormData();
+                    formData.append('image', originalFile);
+                    formData.append('cropped_image', croppedFile);
+                    formData.append('Ngu', Ngu); 
+        
+                    try {
+                        const response = await fetch('https://50fd-113-163-58-197.ngrok-free.app/read_image/', {
+                            method: 'POST',
+                            body: formData
+                        });
+                                
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Data from API:', data);
+        
+                            const ocrTextbox = document.querySelector('.ocr-text');
+                            ocrTextbox.value = data.original_text; // Assuming API returns text in 'original_text'
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, ocrTextbox]);
+        
+                            updateImageFeedback(data.original_text);
+        
+                            const pdfPreview = document.querySelector('.pdf-preview');
+                            const pdfFrame = pdfPreview.querySelector('.pdf-frame');
+        
+                            let pdfUrl = '';//biến lưu path pdf
+                            let phe = '';//biến lưu tên dạng toán
+                            // Xác định dạng toán dựa trên cropped_text
+                            if (data.cropped_text.includes('Giá trị tuyệt đối ở mẫu')) {
+                                pdfUrl = '/static/pdfs/gttd dưới mẫu.pdf';
+                                phe = 'Giá trị tuyệt đối ở mẫu';
+                            } else if (data.cropped_text.includes('|A| + |B| = C')) {
+                                pdfUrl = '/static/pdfs/gttd(A) + gttd(B) = C.pdf';
+                                phe = '|A| + |B| = C';
+                            } else if  (data.cropped_text.includes('|A| = |B|')) {
+                                pdfUrl = '/static/pdfs/gttd(A) = gttd(B).pdf';
+                                phe = '|A| = |B|';
+                            } else if (data.cropped_text.includes('|A| = B')) {
+                                pdfUrl = '/static/pdfs/gttd(A) = B.pdf';
+                                phe = '|A| = B';
+                            } else if (data.cropped_text.includes('sqrt{A} + sqrt{B} = C')) {
+                                pdfUrl = '/static/pdfs/sqrt{A} + sqrt{B} = C.pdf';
+                                phe = 'sqrt{A} + sqrt{B} = C';
+                            } else if (data.cropped_text.includes('sqrt{A} = sqrt{B}')) {
+                                pdfUrl = '/static/pdfs/sqrt{A} = sqrt{B}.pdf';
+                                phe = 'sqrt{A} = sqrt{B}';
+                            } else if (data.cropped_text.includes('sqrt{A} = B')){
+                                pdfUrl = '/static/pdfs/sqrt{A} = B.pdf';
+                                phe = 'sqrt{A} = B';
+                            } else if (data.cropped_text.includes('Phương trình tham số')){
+                                pdfUrl = '/static/pdfs/phương trình tham số.pdf';
+                                phe = 'Phương trình tham số';
+                            } else if (data.cropped_text.includes('Phương trình trùng phương')){
+                                pdfUrl = '/static/pdfs/Phương trình trùng phương.pdf';
+                                phe = 'Phương trình trùng phương';
+                            } else if (data.cropped_text.includes('Phương trình bậc hai cơ bản')){
+                                pdfUrl = '/static/pdfs/Phương trình bậc 2 cơ bản.pdf';
+                                phe = 'Phương trình bậc hai cơ bản';
+                            } else if (data.cropped_text.includes('Phương trình vô tỉ nâng cao')){
+                                pdfUrl = '/static/pdfs/vô tỉ nâng cao.pdf';
+                                phe = 'Phương trình vô tỉ nâng cao';
+                            } else if (data.cropped_text.includes('Phương trình chứa dấu giá trị tuyệt đối nâng cao')){
+                                pdfUrl = '/static/pdfs/gttd nâng cao.pdf';
+                                phe = 'Phương trình chứa dấu giá trị tuyệt đối nâng cao';
+                            } else if (data.cropped_text.includes('Phương trình bậc nhất')){
+                                pdfUrl = '';
+                                phe = 'Phương trình bậc nhất';
+                            } else {
+                                thieunang = false;
+                            }
+        
+                            if (!thieunang){
+                                pdfPreview.style.display = 'none';
+                                const imageFeedback = document.querySelector('.image-feedback');
+                                imageFeedback.innerHTML = '<p>Dạng bài tập này chưa được hỗ trợ xin vui lòng thử lại</p>';
+                                thieunang = true;
+                            } else {
+                                pdfPreview.style.display = 'none';  
+                                const imageFeedback = document.querySelector('.image-feedback');
+                                imageFeedback.innerHTML = `<p>Dạng toán mà bạn muốn tìm kiếm có phải là ${phe}?</p>
+                                                           <button id="dung">Đúng</button>
+                                                           <button id="sai">Sai</button>`;
+                            }
+
+                            //sự kiện khi người dùng chọn "Đúng"
+                            document.getElementById('dung').addEventListener('click', function() {
+                                document.querySelector('.image-feedback').innerHTML = '';
+                                pdfFrame.src = pdfUrl;
+                                ocrTextbox.style.display = 'none';
+                                pdfPreview.style.display = 'block';  
+                            }); 
+
+                            //sự kiện khi người dùng chọn sai
+                            document.getElementById('sai').addEventListener('click', function() {
+                                document.querySelector('.image-feedback').innerHTML = '<p>Xin vui lòng thử lại bằng cách cắt hình ảnh theo một góc độ khác</p>';
+                                pdfPreview.style.display = 'none';
+                            });
+
+                            // Giới thiệu trình vẽ hàm số cho người dùng
+                            const occho = data.cropped_text.includes('Hàm số');
+                            const wrapper = document.querySelector('.wrapper');
+
+                            if (occho && !iachay) {
+                                const notification = document.createElement('sidebar');
+                                notification.className = 'notification-article';
+                                notification.innerHTML = `
+                                    <p>Chúng tôi nhận thấy bạn vừa tìm hiểu một bài toán có liên quan đến hàm số. Bạn có thể dùng thử trình vẽ hàm số của chúng tôi: <a href="{% url 'test_page5' %}" target="_blank">Trình vẽ đồ thị hàm số</a></p>
+                                `;
+                                wrapper.appendChild(notification);
+                                iachay = true;
+                            } else if (!occho && iachay) {
+                                const notification = wrapper.querySelector('.notification-article');
+                                if (notification) {
+                                    wrapper.removeChild(notification);
+                                }
+                                iachay = false;
+                            }
+                        } else {
+                            console.error('Failed to recognize image');
+                            console.error(response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    } finally {
+                        // Ẩn biểu tượng loading sau khi xử lý xong
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                }, 'image/png');
+            } else {
+                alert('Vui lòng chọn và crop ảnh trước khi tải lên.');
+            }
+        });
+        function updateImageFeedback(text) {
+            console.log('Tags:', text);
+        }
+        
+        function openImagePreview() {
+            const inputElement = document.querySelector('.image-upload input[type="file"]');
+            const file = inputElement.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => {
+                    const imageUrl = reader.result;
+                    document.querySelector('.image-preview img').src = imageUrl;
+                    document.querySelector('.image-preview').style.display = 'flex';
+                };
+            } else {
+                alert('Vui lòng chọn một tập tin hình ảnh.');
+            }
+        }
+        
+        function toggleSection(element) {
+            const content = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+        
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                arrow.textContent = '^';
+                element.classList.remove('open');
+            } else {
+                content.style.display = 'block';
+                arrow.textContent = 'v';
+                element.classList.add('open');
+            }
+        }
+        
+        function toggleArticle(element) {
+            const articleContent = element.nextElementSibling;
+            if (articleContent.style.display === 'block') {
+                articleContent.style.display = 'none';
+            } else {
+                articleContent.style.display = 'block';
+            }
+        }
+        // Hàm thay đổi chế độ A/B với hiệu ứng trượt
+        document.getElementById('choose-ab').addEventListener('change', () => {
+            Ngu = Ngu === 'Pdf' ? 'Cam' : 'Pdf';
+            document.getElementById('current-choice').textContent = Ngu;
+            
+        });
+        // Hàm xử lý sự kiện thay đổi giá trị của thanh trượt xoay
+        document.getElementById('rotate-slider').addEventListener('input', (event) => {
+            const angle = event.target.value;
+            if (cropper) {
+                cropper.rotateTo(angle);
+            }
+        });
+        
+    </script>
+
+</body>
+</html>

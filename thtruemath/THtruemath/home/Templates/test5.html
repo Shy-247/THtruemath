@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vẽ Đồ Thị Hàm Số</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #myPlot {
+            width: 100%;
+            height: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vẽ Đồ Thị Hàm Số</h1>
+
+    <form id="chartForm">
+        <label for="formula">Nhập công thức hàm số (dùng x):</label>
+        <input type="text" id="formula" value="x^2">
+
+        <label for="xRangeStart">Giá trị x bắt đầu:</label>
+        <input type="number" id="xRangeStart" value="-10">
+
+        <label for="xRangeEnd">Giá trị x kết thúc:</label>
+        <input type="number" id="xRangeEnd" value="10">
+
+        <button type="button" onclick="updateChart()">Vẽ Đồ Thị</button>
+    </form>
+
+    <div id="myPlot"></div>
+
+    <script>
+        function replacePowerOperator(formula) {
+            // Thay thế ^ bằng Math.pow()
+            return formula.replace(/(\b[a-zA-Z_][a-zA-Z0-9_]*)\^(\d+)/g, 'Math.pow($1, $2)');
+        }
+
+        function drawChart(formula, xRangeStart, xRangeEnd) {
+            const xValues = [];
+            const yValues = [];
+            const xIntegerValues = [];
+            const yIntegerValues = [];
+
+            // Thay thế ký hiệu ^ bằng Math.pow() trong công thức
+            const parsedFormula = replacePowerOperator(formula);
+
+            // Tính toán dữ liệu cho đồ thị với mọi loại hàm số
+            for (let x = xRangeStart; x <= xRangeEnd; x += 0.1) {
+                x = Math.round(x * 10) / 10; // Làm tròn đến 1 chữ số thập phân
+                let y = eval(parsedFormula.replace(/x/g, `(${x})`));
+                xValues.push(x);
+                yValues.push(y);
+
+                // Kiểm tra nếu cả x và y đều là số nguyên
+                if (Number.isInteger(x) && Number.isInteger(y)) {
+                    xIntegerValues.push(x);
+                    yIntegerValues.push(y);
+                }
+            }
+
+            // Trace cho đồ thị hàm số
+            const trace = {
+                x: xValues,
+                y: yValues,
+                mode: 'lines',
+                type: 'scatter',
+                line: { color: 'blue', width: 2 }
+            };
+
+            // Trace cho các điểm (x, y) nguyên
+            const traceIntegers = {
+                x: xIntegerValues,
+                y: yIntegerValues,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { color: 'red', size: 10, symbol: 'circle' },
+                name: 'Điểm (x, y) nguyên'
+            };
+
+            // Bố cục biểu đồ
+            const layout = {
+                title: 'Đồ thị hàm số',
+                xaxis: { title: 'x' },
+                yaxis: { title: 'y' }
+            };
+
+            // Vẽ biểu đồ với cả đồ thị và các điểm nguyên
+            Plotly.newPlot('myPlot', [trace, traceIntegers], layout);
+        }
+
+        function updateChart() {
+            const formula = document.getElementById('formula').value;
+            const xRangeStart = parseFloat(document.getElementById('xRangeStart').value);
+            const xRangeEnd = parseFloat(document.getElementById('xRangeEnd').value);
+            drawChart(formula, xRangeStart, xRangeEnd);
+        }
+
+        // Vẽ đồ thị mặc định khi trang tải
+        updateChart();
+    </script>
+</body>
+</html>
